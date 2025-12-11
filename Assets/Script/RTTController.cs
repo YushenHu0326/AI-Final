@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,9 +13,9 @@ public class RTTController : MonoBehaviour
         public RTTNode previous;
     }
 
-    public float nodeResolution = 0.1f;
+    public float nodeResolution = 1f;
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         navMesh = FindObjectOfType<NavMesh>();
         start = navMesh.gameObject.transform.position;
@@ -36,17 +36,24 @@ public class RTTController : MonoBehaviour
         RTTNode node = startNode;
         
         RaycastHit hit;
-        while (Physics.SphereCast(current, radius, (dest - current).normalized, out hit, (dest - current).magnitude))
+
+        int safecheck1 = 0;
+
+        while (safecheck1 < 20000 && Physics.SphereCast(current, radius, (dest - current).normalized, out hit, (dest - current).magnitude))
         {
+            safecheck1++;
+
+            int safecheck2 = 0;
             Vector3 sample = new Vector3(Random.Range(start.x, end.x),
                                          Random.Range(start.y, end.y),
                                          Random.Range(start.z, end.z));
 
-            while (Physics.SphereCast(current, radius, (sample - current).normalized, out hit, (sample - current).magnitude))
+            while (safecheck2 < 1000 && Physics.SphereCast(current, radius, (sample - current).normalized, out hit, (sample - current).magnitude))
             {
                 sample = new Vector3(Random.Range(start.x, end.x),
                                      Random.Range(start.y, end.y),
                                      Random.Range(start.z, end.z));
+                safecheck2++;
             }
 
             int nearestIdx = 0;
@@ -59,6 +66,9 @@ public class RTTController : MonoBehaviour
             }
 
             Vector3 next = nodes[nearestIdx].position + nodeResolution * (sample - nodes[nearestIdx].position).normalized;
+
+            if (Physics.CheckSphere(next, radius))
+                continue;
             RTTNode nextNode = new RTTNode();
             nextNode.position = next;
             nextNode.previous = nodes[nearestIdx];
@@ -67,7 +77,7 @@ public class RTTController : MonoBehaviour
             current = next;
             node = nextNode;
 
-            Debug.Log(current);
+            Debug.DrawLine(nextNode.position, nextNode.previous.position, Color.red, 20f);
         }
 
         List<Vector3> path = new List<Vector3>();

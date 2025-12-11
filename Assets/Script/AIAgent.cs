@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 
 public class AIAgent : MonoBehaviour
@@ -9,9 +10,9 @@ public class AIAgent : MonoBehaviour
     Vector3 pos;
     List<Vector3> path;
 
-    public Vector3Int initPosition;
+    public Vector3 initPosition;
 
-    public Vector3Int destPosition;
+    public Transform destTransform;
 
     RTTController rTTController;
 
@@ -20,13 +21,21 @@ public class AIAgent : MonoBehaviour
     void Start()
     {
         navMesh = FindObjectOfType<NavMesh>();
-        gameObject.transform.position = navMesh.GetCellPosition(initPosition.x, initPosition.y, initPosition.z);
+        gameObject.transform.position = initPosition;
+        Vector3 destPosition = destTransform.position;
 
-        //path = AStarPathPlanning(initPosition, destPosition);
+        Stopwatch sw = new Stopwatch();
 
-        Vector3 destination = navMesh.GetCellPosition(destPosition.x, destPosition.y, destPosition.z);
+        /*sw.Start();
+        path = AStarPathPlanning(navMesh.GetCellIndex(initPosition.x, initPosition.y, initPosition.z), navMesh.GetCellIndex(destPosition.x, destPosition.y, destPosition.z));
+        sw.Stop();
+        UnityEngine.Debug.Log("Runtime (A*): " + sw.ElapsedMilliseconds + " ms");*/
+
         rTTController = FindObjectOfType<RTTController>();
-        path = rTTController.ExpandNode(GetComponent<SphereCollider>().radius, navMesh.GetCellPosition(initPosition.x, initPosition.y, initPosition.z), destination);
+        sw.Start();
+        path = rTTController.ExpandNode(GetComponent<SphereCollider>().radius, initPosition, destPosition);
+        sw.Stop();
+        UnityEngine.Debug.Log("Runtime (RRT): " + sw.ElapsedMilliseconds + " ms");
     }
 
     // Update is called once per frame
@@ -58,6 +67,8 @@ public class AIAgent : MonoBehaviour
 
         if (initCell == null || destCell == null || initCell.blocked || destCell.blocked)
         {
+            UnityEngine.Debug.Log(initCell.blocked);
+            UnityEngine.Debug.Log(destCell.blocked);
             return new List<Vector3>();
         }
 
@@ -118,7 +129,7 @@ public class AIAgent : MonoBehaviour
         }
 
         // no path
-        Debug.LogWarning("A* found no path.");
+        UnityEngine.Debug.LogWarning("A* found no path.");
         return new List<Vector3>();
     }
 
