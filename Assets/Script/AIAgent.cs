@@ -6,9 +6,25 @@ using UnityEngine;
 
 public class AIAgent : MonoBehaviour
 {
+    public enum AgentMode
+    {
+        AStar,
+        RTT
+    }
+
+    public enum DebugMode
+    {
+        FullMode,
+        SimpleMode,
+        NoDebug
+    }
+
     NavMesh navMesh;
     Vector3 pos;
     List<Vector3> path;
+
+    public AgentMode agentMode = AgentMode.AStar;
+    public DebugMode debugMode = DebugMode.FullMode;
 
     public Vector3 initPosition;
 
@@ -26,16 +42,21 @@ public class AIAgent : MonoBehaviour
 
         Stopwatch sw = new Stopwatch();
 
-        /*sw.Start();
-        path = AStarPathPlanning(navMesh.GetCellIndex(initPosition.x, initPosition.y, initPosition.z), navMesh.GetCellIndex(destPosition.x, destPosition.y, destPosition.z));
-        sw.Stop();
-        UnityEngine.Debug.Log("Runtime (A*): " + sw.ElapsedMilliseconds + " ms");*/
-
-        rTTController = FindObjectOfType<RTTController>();
-        sw.Start();
-        path = rTTController.ExpandNode(GetComponent<SphereCollider>().radius, initPosition, destPosition);
-        sw.Stop();
-        UnityEngine.Debug.Log("Runtime (RRT): " + sw.ElapsedMilliseconds + " ms");
+        if (agentMode == AgentMode.AStar)
+        {
+            sw.Start();
+            path = AStarPathPlanning(navMesh.GetCellIndex(initPosition.x, initPosition.y, initPosition.z), navMesh.GetCellIndex(destPosition.x, destPosition.y, destPosition.z));
+            sw.Stop();
+            UnityEngine.Debug.Log("Runtime (A*): " + sw.ElapsedMilliseconds + " ms");
+        }
+        else
+        {
+            rTTController = FindObjectOfType<RTTController>();
+            sw.Start();
+            path = rTTController.ExpandNode(GetComponent<SphereCollider>().radius, initPosition, destPosition, debugMode);
+            sw.Stop();
+            UnityEngine.Debug.Log("Runtime (RRT): " + sw.ElapsedMilliseconds + " ms");
+        }
     }
 
     // Update is called once per frame
@@ -44,7 +65,7 @@ public class AIAgent : MonoBehaviour
         if (path.Count > 0)
         {
             pos = path[0];
-            if ((pos - gameObject.transform.position).magnitude > 0.01f)
+            if ((pos - gameObject.transform.position).magnitude > 0.1f)
             {
                 gameObject.transform.position += (pos - gameObject.transform.position).normalized * 5f * Time.deltaTime;
                 arriveAtStop = false;

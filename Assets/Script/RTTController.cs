@@ -24,7 +24,7 @@ public class RTTController : MonoBehaviour
                                   navMesh.cellSize * (float)navMesh.cellZ);
     }
 
-    public List<Vector3> ExpandNode(float radius, Vector3 init, Vector3 dest)
+    public List<Vector3> ExpandNode(float radius, Vector3 init, Vector3 dest, AIAgent.DebugMode debugMode)
     {
         List<RTTNode> nodes = new List<RTTNode>();
 
@@ -77,13 +77,16 @@ public class RTTController : MonoBehaviour
             current = next;
             node = nextNode;
 
-            Debug.DrawLine(nextNode.position, nextNode.previous.position, Color.red, 20f);
+            if (debugMode == AIAgent.DebugMode.FullMode)
+                Debug.DrawLine(nextNode.position, nextNode.previous.position, Color.red, 20f);
         }
 
         List<Vector3> path = new List<Vector3>();
         path.Add(dest);
         while (node.previous != null)
         {
+            if (debugMode == AIAgent.DebugMode.SimpleMode)
+                Debug.DrawLine(node.position, node.previous.position, Color.red, 20f);
             path.Add(node.position);
             node = node.previous;
         }
