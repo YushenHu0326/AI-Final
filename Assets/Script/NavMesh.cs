@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,7 +8,7 @@ public class NavMesh : MonoBehaviour
     public int cellX, cellY, cellZ;
     public float cellSize = 1f;
 
-    public struct NavMeshCell
+    public class NavMeshCell
     {
         public int x, y, z;
         public Vector3 position;
@@ -96,6 +97,12 @@ public class NavMesh : MonoBehaviour
         return GetCell(x, y, z).position;
     }
 
+    public Vector3Int GetCellIndex(NavMeshCell cell)
+    {
+        Vector3 local = cell.position - transform.position;
+        return new Vector3Int((int)Mathf.Floor(local.x / cellSize), (int)Mathf.Floor(local.y / cellSize), (int)Mathf.Floor(local.z / cellSize));
+    }
+
     public Vector3Int GetCellIndex(float x, float y, float z)
     {
         Vector3 local = new Vector3(x, y, z) - transform.position;
@@ -105,5 +112,12 @@ public class NavMesh : MonoBehaviour
     public List<NavMeshCell> GetCellNeighbors(int x, int y, int z)
     {
         return GetCell(x, y, z).neighbors;
+    }
+
+    public float GetManhattanDistance(NavMeshCell start, NavMeshCell end)
+    {
+        return Mathf.Abs(start.position.x - end.position.x) + 
+               Mathf.Abs(start.position.y - end.position.y) +
+               Mathf.Abs(start.position.z - end.position.z);
     }
 }
