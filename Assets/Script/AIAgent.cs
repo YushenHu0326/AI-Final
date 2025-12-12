@@ -38,6 +38,34 @@ public class AIAgent : MonoBehaviour
     {
         navMesh = FindObjectOfType<NavMesh>();
         gameObject.transform.position = initPosition;
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (path == null) return;
+
+        if (path.Count > 0)
+        {
+            pos = path[0];
+            if ((pos - gameObject.transform.position).magnitude > 0.1f)
+            {
+                gameObject.transform.position += (pos - gameObject.transform.position).normalized * 5f * Time.deltaTime;
+                arriveAtStop = false;
+            }
+            else
+            {
+                if (!arriveAtStop)
+                {
+                    arriveAtStop = true;
+                    path.RemoveAt(0);
+                }
+            }
+        }
+    }
+
+    public void PathPlanning()
+    {
         Vector3 destPosition = destTransform.position;
 
         Stopwatch sw = new Stopwatch();
@@ -56,28 +84,6 @@ public class AIAgent : MonoBehaviour
             path = rTTController.ExpandNode(GetComponent<SphereCollider>().radius, initPosition, destPosition, debugMode);
             sw.Stop();
             UnityEngine.Debug.Log("Runtime (RRT): " + sw.ElapsedMilliseconds + " ms");
-        }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (path.Count > 0)
-        {
-            pos = path[0];
-            if ((pos - gameObject.transform.position).magnitude > 0.1f)
-            {
-                gameObject.transform.position += (pos - gameObject.transform.position).normalized * 5f * Time.deltaTime;
-                arriveAtStop = false;
-            }
-            else
-            {
-                if (!arriveAtStop)
-                {
-                    arriveAtStop = true;
-                    path.RemoveAt(0);
-                }
-            }
         }
     }
 
@@ -154,11 +160,10 @@ public class AIAgent : MonoBehaviour
         return new List<Vector3>();
     }
 
-    List<Vector3> ReconstructPath(Dictionary<NavMesh.NavMeshCell, NavMesh.NavMeshCell> cameFrom,
-                                     NavMesh.NavMeshCell current)
+    List<Vector3> ReconstructPath(Dictionary<NavMesh.NavMeshCell, NavMesh.NavMeshCell> cameFrom, NavMesh.NavMeshCell current)
     {
         List<Vector3> totalPath = new List<Vector3>();
-        totalPath.Add(navMesh.GetCellIndex(current));
+        totalPath.Add(current.position);
 
         while (cameFrom.TryGetValue(current, out var prev))
         {

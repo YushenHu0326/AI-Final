@@ -1,0 +1,180 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+struct Tetrahedra
+{
+    float3 x;
+    float3 y;
+    float3 z;
+    float3 w;
+
+    float xVal;
+    float yVal;
+    float zVal;
+    float wVal;
+
+    float3 t1a;
+    float3 t1b;
+    float3 t1c;
+    float3 t1n;
+
+    float3 t2a;
+    float3 t2b;
+    float3 t2c;
+    float3 t2n;
+};
+
+RWStructuredBuffer<Tetrahedra> tetras;
+float surfaceVal;
+
+[numthreads(50,1,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    // TODO: insert actual code here!
+
+    Tetrahedra tetra = tetras[id.x];
+
+    if (tetra.xVal < surfaceVal && tetra.yVal > surfaceVal && tetra.zVal > surfaceVal && tetra.wVal > surfaceVal)
+    {
+        tetra.t1a = tetra.y + (tetra.x - tetra.y) * ((surfaceVal - tetra.yVal) / (tetra.xVal - tetra.yVal));
+        tetra.t1b = tetra.z + (tetra.x - tetra.z) * ((surfaceVal - tetra.zVal) / (tetra.xVal - tetra.zVal));
+        tetra.t1c = tetra.w + (tetra.x - tetra.w) * ((surfaceVal - tetra.wVal) / (tetra.xVal - tetra.wVal));
+        tetra.t1n = tetra.x - tetra.y;
+    }
+
+    if (tetra.xVal > surfaceVal && tetra.yVal < surfaceVal && tetra.zVal < surfaceVal && tetra.wVal < surfaceVal)
+    {
+        tetra.t1a = tetra.x + (tetra.y - tetra.x) * ((surfaceVal - tetra.xVal) / (tetra.yVal - tetra.xVal));
+        tetra.t1b = tetra.x + (tetra.z - tetra.x) * ((surfaceVal - tetra.xVal) / (tetra.zVal - tetra.xVal));
+        tetra.t1c = tetra.x + (tetra.w - tetra.x) * ((surfaceVal - tetra.xVal) / (tetra.wVal - tetra.xVal));
+        tetra.t1n = tetra.y - tetra.x;
+    }
+
+    if (tetra.yVal < surfaceVal && tetra.xVal > surfaceVal && tetra.zVal > surfaceVal && tetra.wVal > surfaceVal)
+    {
+        tetra.t1a = tetra.x + (tetra.y - tetra.x) * ((surfaceVal - tetra.xVal) / (tetra.yVal - tetra.xVal));
+        tetra.t1b = tetra.z + (tetra.y - tetra.z) * ((surfaceVal - tetra.zVal) / (tetra.yVal - tetra.zVal));
+        tetra.t1c = tetra.w + (tetra.y - tetra.w) * ((surfaceVal - tetra.wVal) / (tetra.yVal - tetra.wVal));
+        tetra.t1n = tetra.y - tetra.x;
+    }
+
+    if (tetra.yVal > surfaceVal && tetra.xVal < surfaceVal && tetra.zVal < surfaceVal && tetra.wVal < surfaceVal)
+    {
+        tetra.t1a = tetra.y + (tetra.x - tetra.y) * ((surfaceVal - tetra.yVal) / (tetra.xVal - tetra.yVal));
+        tetra.t1b = tetra.y + (tetra.z - tetra.y) * ((surfaceVal - tetra.yVal) / (tetra.zVal - tetra.yVal));
+        tetra.t1c = tetra.y + (tetra.w - tetra.y) * ((surfaceVal - tetra.yVal) / (tetra.wVal - tetra.yVal));
+        tetra.t1n = tetra.x - tetra.y;
+    }
+
+    if (tetra.zVal < surfaceVal && tetra.xVal > surfaceVal && tetra.yVal > surfaceVal && tetra.wVal > surfaceVal)
+    {
+        tetra.t1a = tetra.x + (tetra.z - tetra.x) * ((surfaceVal - tetra.xVal) / (tetra.zVal - tetra.xVal));
+        tetra.t1b = tetra.y + (tetra.z - tetra.y) * ((surfaceVal - tetra.yVal) / (tetra.zVal - tetra.yVal));
+        tetra.t1c = tetra.w + (tetra.z - tetra.w) * ((surfaceVal - tetra.wVal) / (tetra.zVal - tetra.wVal));
+        tetra.t1n = tetra.z - tetra.y;
+    }
+
+    if (tetra.zVal > surfaceVal && tetra.xVal < surfaceVal && tetra.yVal < surfaceVal && tetra.wVal < surfaceVal)
+    {
+        tetra.t1a = tetra.z + (tetra.x - tetra.z) * ((surfaceVal - tetra.zVal) / (tetra.xVal - tetra.zVal));
+        tetra.t1b = tetra.z + (tetra.y - tetra.z) * ((surfaceVal - tetra.zVal) / (tetra.yVal - tetra.zVal));
+        tetra.t1c = tetra.z + (tetra.w - tetra.z) * ((surfaceVal - tetra.zVal) / (tetra.wVal - tetra.zVal));
+        tetra.t1n = tetra.y - tetra.z;
+    }
+
+    if (tetra.wVal < surfaceVal && tetra.xVal > surfaceVal && tetra.yVal > surfaceVal && tetra.zVal > surfaceVal)
+    {
+        tetra.t1a = tetra.x + (tetra.w - tetra.x) * ((surfaceVal - tetra.xVal) / (tetra.wVal - tetra.xVal));
+        tetra.t1b = tetra.y + (tetra.w - tetra.y) * ((surfaceVal - tetra.yVal) / (tetra.wVal - tetra.yVal));
+        tetra.t1c = tetra.z + (tetra.w - tetra.z) * ((surfaceVal - tetra.zVal) / (tetra.wVal - tetra.zVal));
+        tetra.t1n = tetra.w - tetra.y;
+    }
+
+    if (tetra.wVal > surfaceVal && tetra.xVal < surfaceVal && tetra.yVal < surfaceVal && tetra.zVal < surfaceVal)
+    {
+        tetra.t1a = tetra.w + (tetra.x - tetra.w) * ((surfaceVal - tetra.wVal) / (tetra.xVal - tetra.wVal));
+        tetra.t1b = tetra.w + (tetra.y - tetra.w) * ((surfaceVal - tetra.wVal) / (tetra.yVal - tetra.wVal));
+        tetra.t1c = tetra.w + (tetra.z - tetra.w) * ((surfaceVal - tetra.wVal) / (tetra.zVal - tetra.wVal));
+        tetra.t1n = tetra.y - tetra.w;
+    }
+
+    if (tetra.xVal < surfaceVal && tetra.yVal < surfaceVal && tetra.zVal > surfaceVal && tetra.wVal > surfaceVal)
+    {
+        tetra.t1a = tetra.z + (tetra.x - tetra.z) * ((surfaceVal - tetra.zVal) / (tetra.xVal - tetra.zVal));
+        tetra.t1b = tetra.w + (tetra.x - tetra.w) * ((surfaceVal - tetra.wVal) / (tetra.xVal - tetra.wVal));
+        tetra.t1c = tetra.w + (tetra.y - tetra.w) * ((surfaceVal - tetra.wVal) / (tetra.yVal - tetra.wVal));
+        tetra.t1n = tetra.x - tetra.z;
+
+        tetra.t2a = tetra.z + (tetra.y - tetra.z) * ((surfaceVal - tetra.zVal) / (tetra.yVal - tetra.zVal));
+        tetra.t2b = tetra.w + (tetra.y - tetra.w) * ((surfaceVal - tetra.wVal) / (tetra.yVal - tetra.wVal));
+        tetra.t2c = tetra.z + (tetra.x - tetra.z) * ((surfaceVal - tetra.zVal) / (tetra.xVal - tetra.zVal));
+        tetra.t2n = tetra.x - tetra.z;
+    }
+
+    if (tetra.xVal > surfaceVal && tetra.yVal > surfaceVal && tetra.zVal < surfaceVal && tetra.wVal < surfaceVal)
+    {
+        tetra.t1a = tetra.x + (tetra.z - tetra.x) * ((surfaceVal - tetra.xVal) / (tetra.zVal - tetra.xVal));
+        tetra.t1b = tetra.x + (tetra.w - tetra.x) * ((surfaceVal - tetra.xVal) / (tetra.wVal - tetra.xVal));
+        tetra.t1c = tetra.y + (tetra.w - tetra.y) * ((surfaceVal - tetra.yVal) / (tetra.wVal - tetra.yVal));
+        tetra.t1n = tetra.z - tetra.x;
+
+        tetra.t2a = tetra.y + (tetra.z - tetra.y) * ((surfaceVal - tetra.yVal) / (tetra.zVal - tetra.yVal));
+        tetra.t2b = tetra.y + (tetra.w - tetra.y) * ((surfaceVal - tetra.yVal) / (tetra.wVal - tetra.yVal));
+        tetra.t2c = tetra.x + (tetra.z - tetra.x) * ((surfaceVal - tetra.xVal) / (tetra.zVal - tetra.xVal));
+        tetra.t2n = tetra.z - tetra.x;
+    }
+
+    if (tetra.xVal < surfaceVal && tetra.zVal < surfaceVal && tetra.yVal > surfaceVal && tetra.wVal > surfaceVal)
+    {
+        tetra.t1a = tetra.y + (tetra.x - tetra.y) * ((surfaceVal - tetra.yVal) / (tetra.xVal - tetra.yVal));
+        tetra.t1b = tetra.w + (tetra.x - tetra.w) * ((surfaceVal - tetra.wVal) / (tetra.xVal - tetra.wVal));
+        tetra.t1c = tetra.w + (tetra.z - tetra.w) * ((surfaceVal - tetra.wVal) / (tetra.zVal - tetra.wVal));
+        tetra.t1n = tetra.x - tetra.y;
+
+        tetra.t2a = tetra.y + (tetra.z - tetra.y) * ((surfaceVal - tetra.yVal) / (tetra.zVal - tetra.yVal));
+        tetra.t2b = tetra.w + (tetra.z - tetra.w) * ((surfaceVal - tetra.wVal) / (tetra.zVal - tetra.wVal));
+        tetra.t2c = tetra.y + (tetra.x - tetra.y) * ((surfaceVal - tetra.yVal) / (tetra.xVal - tetra.yVal));
+        tetra.t2n = tetra.x - tetra.y;
+    }
+
+    if (tetra.xVal > surfaceVal && tetra.zVal > surfaceVal && tetra.yVal < surfaceVal && tetra.wVal < surfaceVal)
+    {
+        tetra.t1a = tetra.x + (tetra.y - tetra.x) * ((surfaceVal - tetra.xVal) / (tetra.yVal - tetra.xVal));
+        tetra.t1b = tetra.x + (tetra.w - tetra.x) * ((surfaceVal - tetra.xVal) / (tetra.wVal - tetra.xVal));
+        tetra.t1c = tetra.z + (tetra.w - tetra.z) * ((surfaceVal - tetra.zVal) / (tetra.wVal - tetra.zVal));
+        tetra.t1n = tetra.y - tetra.x;
+
+        tetra.t2a = tetra.z + (tetra.y - tetra.z) * ((surfaceVal - tetra.zVal) / (tetra.yVal - tetra.zVal));
+        tetra.t2b = tetra.z + (tetra.w - tetra.z) * ((surfaceVal - tetra.zVal) / (tetra.wVal - tetra.zVal));
+        tetra.t2c = tetra.x + (tetra.y - tetra.x) * ((surfaceVal - tetra.xVal) / (tetra.yVal - tetra.xVal));
+        tetra.t2n = tetra.y - tetra.x;
+    }
+
+    if (tetra.xVal < surfaceVal && tetra.wVal < surfaceVal && tetra.yVal > surfaceVal && tetra.zVal > surfaceVal)
+    {
+        tetra.t1a = tetra.z + (tetra.x - tetra.z) * ((surfaceVal - tetra.zVal) / (tetra.xVal - tetra.zVal));
+        tetra.t1b = tetra.y + (tetra.x - tetra.y) * ((surfaceVal - tetra.yVal) / (tetra.xVal - tetra.yVal));
+        tetra.t1c = tetra.y + (tetra.w - tetra.y) * ((surfaceVal - tetra.yVal) / (tetra.wVal - tetra.yVal));
+        tetra.t1n = tetra.x - tetra.z;
+
+        tetra.t2a = tetra.z + (tetra.w - tetra.z) * ((surfaceVal - tetra.zVal) / (tetra.wVal - tetra.zVal));
+        tetra.t2b = tetra.y + (tetra.w - tetra.y) * ((surfaceVal - tetra.yVal) / (tetra.wVal - tetra.yVal));
+        tetra.t2c = tetra.z + (tetra.x - tetra.z) * ((surfaceVal - tetra.zVal) / (tetra.xVal - tetra.zVal));
+        tetra.t2n = tetra.x - tetra.z;
+    }
+
+    if (tetra.xVal > surfaceVal && tetra.wVal > surfaceVal && tetra.yVal < surfaceVal && tetra.zVal < surfaceVal)
+    {
+        tetra.t1a = tetra.x + (tetra.z - tetra.x) * ((surfaceVal - tetra.xVal) / (tetra.zVal - tetra.xVal));
+        tetra.t1b = tetra.x + (tetra.y - tetra.x) * ((surfaceVal - tetra.xVal) / (tetra.yVal - tetra.xVal));
+        tetra.t1c = tetra.w + (tetra.z - tetra.w) * ((surfaceVal - tetra.wVal) / (tetra.zVal - tetra.wVal));
+        tetra.t1n = tetra.z - tetra.x;
+
+        tetra.t2a = tetra.w + (tetra.z - tetra.w) * ((surfaceVal - tetra.wVal) / (tetra.zVal - tetra.wVal));
+        tetra.t2b = tetra.w + (tetra.y - tetra.w) * ((surfaceVal - tetra.wVal) / (tetra.yVal - tetra.wVal));
+        tetra.t2c = tetra.x + (tetra.y - tetra.x) * ((surfaceVal - tetra.xVal) / (tetra.yVal - tetra.xVal));
+        tetra.t2n = tetra.z - tetra.x;
+    }
+    
+    tetras[id.x] = tetra;
+}
