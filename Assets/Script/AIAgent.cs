@@ -33,6 +33,8 @@ public class AIAgent : MonoBehaviour
     RTTController rTTController;
 
     bool arriveAtStop;
+
+    public float timeUsed;
     // Start is called before the first frame update
     void Start()
     {
@@ -85,6 +87,8 @@ public class AIAgent : MonoBehaviour
             sw.Stop();
             UnityEngine.Debug.Log("Runtime (RRT): " + sw.ElapsedMilliseconds + " ms");
         }
+
+        timeUsed = (float)sw.ElapsedMilliseconds;
     }
 
     List<Vector3> AStarPathPlanning(Vector3Int init, Vector3Int dest)
@@ -94,8 +98,6 @@ public class AIAgent : MonoBehaviour
 
         if (initCell == null || destCell == null || initCell.blocked || destCell.blocked)
         {
-            UnityEngine.Debug.Log(initCell.blocked);
-            UnityEngine.Debug.Log(destCell.blocked);
             return new List<Vector3>();
         }
 
