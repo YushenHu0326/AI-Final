@@ -19,3 +19,5 @@ RTT is a customized version implemented after reading the paper and watch a coup
 I bring my previous project of [Marching Tetrahedra](https://github.com/YushenHu0326/3DModeling-Unity) to use. Any grid cell which the value is larger than the surface value will be marked as "blocked". Notice that the marching tetrahedra grid size must be the same as the NavMesh.
 
 Also, for the simplicity, I refered the marching tetrahedra method as marching cube in my paper.
+
+**Two external open sourced scripts are used. They are: [Keijiro's implementation of 3D Perlin Noise](https://github.com/keijiro/PerlinNoise), and [Ashley's implementation](https://gist.github.com/ashleydavis/f025c03a9221bc840a2b) of a free camera. The rest of the codes are all written by myself.**
