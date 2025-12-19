@@ -24,3 +24,8 @@ Also, for the simplicity, I refered the marching tetrahedra method as marching c
 
 # Live Demo
 You can play the demo [here](https://play.unity.com/en/games/4563cac1-2d14-4826-ae63-7cc15b40d4c7/ai-final-demo). Please be noted, as in the paper and in the description of the game page, that the noise scene doesn't work.
+
+# GIF Demo
+To demonstrate how the tree is expanded:
+![demo](https://github.com/user-attachments/assets/780d6093-8f84-4ab3-b8f4-afa796e92f1c)
+
