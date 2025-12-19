@@ -21,3 +21,6 @@ I bring my previous project of [Marching Tetrahedra](https://github.com/YushenHu
 Also, for the simplicity, I refered the marching tetrahedra method as marching cube in my paper.
 
 **Two external open sourced scripts are used. They are: [Keijiro's implementation of 3D Perlin Noise](https://github.com/keijiro/PerlinNoise), and [Ashley's implementation](https://gist.github.com/ashleydavis/f025c03a9221bc840a2b) of a free camera. The rest of the codes are all written by myself.**
+
+# Live Demo
+You can play the demo [here](https://play.unity.com/en/games/4563cac1-2d14-4826-ae63-7cc15b40d4c7/ai-final-demo). Please be noted, as in the paper and in the description of the game page, that the noise scene doesn't work.
