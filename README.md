@@ -5,7 +5,7 @@ This is the code based for my implementation of the final project in Intro to Ar
 - Language used: C#, Unity ShaderLab (for parallel GPU computation)
 
 # Description
-**Please be aware that this description assumes you have a basic knowledge of Unity Game Programming and Developing skills. If not, please ask online or Generative AI for explanations in detail you don't understand.**
+**Please be aware that this description assumes you have a basic knowledge of Unity Game Programming and Developing skills. If not, please ask online or Generative AI for explanations for the details you don't understand.**
 
 Two path-planning algorithms: A* and RTT, are implemented.
 A* is implemented in 3D space, based on the NavMesh.cs which defines the 3D space. It uses the classic implementation with a few tweaks:
